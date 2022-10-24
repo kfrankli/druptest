@@ -1,0 +1,48 @@
+
+/* line 314, sass/si-form.scss */
+.field--name-field-hero-type .form-radios label,
+.field--name-field-bg-image-type .form-radios label {
+  text-indent: -999px;
+  height: 35px;
+  width: 80px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin-left: .5em !important;
+  display: block; }
+
+.field--name-field-bg-image-type .form-radios input[value="_none"] + label {
+  text-indent: 0;
+}
+
+.field--name-field-hero-type .form-radios input[value="1"] label {
+  background-image: url("image.png");
+}
+
+
+/* line 329, sass/si-form.scss */
+.layout--si_layout_tiles .form-radios input[value="three"] + label,
+.layout--si_layout_tiles .form-item-layout-settings-columns input[value="three"] + label {
+  background-image: url("../images/tile3.png");
+  height: 21px; }
+
+/* line 334, sass/si-form.scss */
+.layout--si_layout_tiles .form-radios input[value="three-feature"] + label,
+.layout--si_layout_tiles .form-item-layout-settings-columns input[value="three-feature"] + label {
+  background-image: url("../images/tile3-feature.png");
+  width: 60px; }
+
+/* line 339, sass/si-form.scss */
+.layout--si_layout_tiles .form-radios input[value="four"] + label,
+.layout--si_layout_tiles .form-item-layout-settings-columns input[value="four"] + label {
+  background-image: url("../images/tile4.png");
+  width: 80px; }
+
+/* line 344, sass/si-form.scss */
+.layout--si_layout_tiles .form-radios input[value="five"] + label,
+.layout--si_layout_tiles .form-item-layout-settings-columns input[value="five"] + label {
+  background-image: url("../images/tile5.png"); }
+
+/* line 347, sass/si-form.scss */
+.layout--si_layout_tiles .form-radios input[value="five-alt"] + label,
+.layout--si_layout_tiles .form-item-layout-settings-columns input[value="five-alt"] + label {
+  background-image: url("../images/tile5-alt.png"); }

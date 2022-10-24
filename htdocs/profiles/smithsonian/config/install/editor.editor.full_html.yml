@@ -1,0 +1,86 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.full_html
+  module:
+    - ckeditor
+format: full_html
+editor: ckeditor
+settings:
+  toolbar:
+    rows:
+      -
+        -
+          name: Formatting
+          items:
+            - Bold
+            - Italic
+            - Underline
+            - Strike
+            - Superscript
+            - Subscript
+            - '-'
+            - RemoveFormat
+        -
+          name: Copy-Paste
+          items:
+            - Copy
+            - Cut
+            - PasteFromWord
+            - Redo
+            - Undo
+        -
+          name: Linking
+          items:
+            - DrupalLink
+            - DrupalUnlink
+        -
+          name: Lists
+          items:
+            - BulletedList
+            - NumberedList
+        -
+          name: Media
+          items:
+            - ImceImage
+            - Blockquote
+            - DrupalMediaLibrary
+            - Table
+            - HorizontalRule
+        -
+          name: 'Block Formatting'
+          items:
+            - Styles
+            - Format
+            - JustifyLeft
+            - JustifyCenter
+            - JustifyRight
+            - JustifyBlock
+            - Outdent
+            - Indent
+        -
+          name: Tools
+          items:
+            - SpecialChar
+            - Language
+            - ShowBlocks
+            - Maximize
+            - Source
+            - Templates
+  plugins:
+    stylescombo:
+      styles: "span.font-secondary|Secondary Font\r\nspan.large|Large Text\r\nspan.larger|Larger Text\r\nspan.text-blue|Blue Text\r\nspan.text-burgundy|Burgundy Text\r\nspan.text-purple|Purple Text\r\nspan.sr-only|Screen Reader Only\r\na.btn|Button\r\na.btn-large|Large Btn\r\na.btn-text|Read More Btn\r\na.btn-blue|Blue Btn\r\na.btn-burgundy|Burgundy Btn\r\na.btn-orange|Orange Btn\r\np.no-spacing|No Spacing (p)\r\np.inline|Display inline\r\ndiv.inline|Display Inline"
+    drupallink:
+      linkit_enabled: false
+      linkit_profile: ''
+    language:
+      language_list: un
+image_upload:
+  status: true
+  scheme: public
+  directory: inline-images
+  max_size: ''
+  max_dimensions:
+    width: null
+    height: null

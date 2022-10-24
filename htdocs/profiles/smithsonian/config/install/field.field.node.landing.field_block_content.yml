@@ -1,0 +1,91 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_block_content
+    - node.type.landing
+    - paragraphs.paragraphs_type.block
+    - paragraphs.paragraphs_type.captioned_image
+    - paragraphs.paragraphs_type.layout
+    - paragraphs.paragraphs_type.linked_text_block
+    - paragraphs.paragraphs_type.slideshow
+    - paragraphs.paragraphs_type.tab_content
+    - paragraphs.paragraphs_type.text_block
+    - paragraphs.paragraphs_type.tile
+    - paragraphs.paragraphs_type.video
+    - paragraphs.paragraphs_type.view_embed
+  module:
+    - entity_reference_revisions
+    - si_content
+id: node.landing.field_block_content
+field_name: field_block_content
+entity_type: node
+bundle: landing
+label: 'Block Content'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      captioned_image: captioned_image
+      block: block
+      layout: layout
+      linked_text_block: linked_text_block
+      slideshow: slideshow
+      tab_content: tab_content
+      text_block: text_block
+      tile: tile
+      video: video
+      view_embed: view_embed
+    negate: 0
+    target_bundles_drag_drop:
+      block:
+        weight: 16
+        enabled: true
+      captioned_image:
+        weight: 15
+        enabled: true
+      hero_image:
+        weight: 16
+        enabled: false
+      layout:
+        weight: 17
+        enabled: true
+      linked_text_block:
+        weight: 18
+        enabled: true
+      responsive_tabs:
+        weight: 19
+        enabled: false
+      slide:
+        weight: 20
+        enabled: false
+      slideshow:
+        weight: 21
+        enabled: true
+      tab_content:
+        weight: 22
+        enabled: true
+      text_block:
+        weight: 23
+        enabled: true
+      tile:
+        weight: 24
+        enabled: true
+      tile_layout:
+        weight: 26
+        enabled: false
+      tiles:
+        weight: 25
+        enabled: false
+      video:
+        weight: 27
+        enabled: true
+      view_embed:
+        weight: 28
+        enabled: true
+field_type: entity_reference_revisions

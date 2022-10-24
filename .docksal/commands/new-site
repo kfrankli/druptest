@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#: exec_target = cli
+
+drush si smithsonian --site-name=SIBL --account-name=admin --account-pass=admin --account-mail=noreply@si.edu --db-url=mysql://user:user@db:3306/default;

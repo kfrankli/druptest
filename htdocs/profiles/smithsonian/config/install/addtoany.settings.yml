@@ -1,0 +1,29 @@
+buttons_size: 32
+additional_html: "<button class=\"share-btn\" aria-controls=\"addtoany-social-media\" aria-expanded=\"false\">\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 32 30.6\" style=\"enable-background:new 0 0 32 30.6;\" xml:space=\"preserve\">\r\n
+<circle class=\"circle\" fill=\"CurrentColor\" cx=\"5.7\" cy=\"15.3\" r=\"5.7\"/>\r\n
+<circle class=\"circle\" fill=\"CurrentColor\" cx=\"26.3\" cy=\"24.9\" r=\"5.7\"/>\r\n
+<circle class=\"circle\" fill=\"CurrentColor\" cx=\"26.3\" cy=\"5.7\" r=\"5.7\"/>\r\n
+<line class=\"line\" fill=\"none\" stroke=\"CurrentColor\" stroke-miterlimit=\"10\" x1=\"5.7\" y1=\"15.3\" x2=\"26.3\" y2=\"5.7\"/>\r\n
+<line class=\"line\" fill=\"none\" stroke=\"CurrentColor\" stroke-miterlimit=\"10\" x1=\"26.3\" y1=\"24.9\" x2=\"5.7\" y2=\"15.3\"/>\r\n
+</svg>\r\n<span class=\"element-invisible\">Click to expand social media share options</span>\r\n</button>\r\n
+<span id=\"addtoany-social-media\" class=\"social-media\">\r\n<a class=\"a2a_button_facebook\"></a>\r\n<a class=\"a2a_button_twitter\"></a>\r\n<a class=\"a2a_button_google_plus\"></a>\r\n</span>\r\n<a class=\"a2a_button_copy_link\"></a>\r\n<a class=\"a2a_button_email\"></a>\r\n<a class=\"a2a_button_print\"></a>\r\n\r\n"
+additional_css: ''
+additional_js: 'a2a_config.icon_color = "transparent,#137ABC"'
+universal_button: none
+custom_universal_button: ''
+universal_button_placement: before
+no_3p: false
+entities:
+  media: 1
+  node: 1
+  comment: 1
+  block_content: 0
+  contact_message: 0
+  content_moderation_state: 0
+  crop: 0
+  file: 0
+  shortcut: 0
+  taxonomy_term: 0
+  user: 0
+  menu_link_content: 0
+  paragraph: 0

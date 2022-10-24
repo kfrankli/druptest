@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: inline_desk
+label: 'Inline Desk'
+effects:
+  7c112660-f9b1-403b-9beb-cd85a1801a0c:
+    uuid: 7c112660-f9b1-403b-9beb-cd85a1801a0c
+    id: image_scale
+    weight: 1
+    data:
+      width: 1360
+      height: null
+      upscale: false

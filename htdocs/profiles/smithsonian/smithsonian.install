@@ -1,0 +1,323 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the smithsonian installation profile.
+ */
+
+use Drupal\user\Entity\User;
+use Drupal\block\Entity\Block;
+use Drupal\block_content\Entity\BlockContent;
+use Symfony\Component\Yaml\Yaml;
+use Drupal\Core\Config\InstallStorage;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ *
+ * @see system_install()
+ */
+function smithsonian_install() {
+  // Assign user 1 the "administrator" role.
+  $user = User::load(1);
+  $user->roles[] = 'administrator';
+  $user->save();
+
+  // We install some menu links, so we have to rebuild the router, to ensure the
+  // menu links are valid.
+  \Drupal::service('router.builder')->rebuildIfNeeded();
+
+  // Allow all users to use search.
+//	user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, array('search content'));
+//	user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, array('search content'));
+
+  // Enable the Contact link in the footer menu.
+  /** @var \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager */
+  $menu_link_manager = \Drupal::service('plugin.manager.menu.link');
+
+  // Enable the admin theme.
+  \Drupal::configFactory()->getEditable('node.settings')->set('use_admin_theme', TRUE)->save(TRUE);
+
+
+  //set full width content type
+  $config = \Drupal::service('config.factory')->getEditable('si_content.settings');
+  $config->set('full_layout', ['landing_page' => 'landing_page'])->save();
+
+//  // Enable the si_basetheme. This can't be specified as a dependency as we need to certain views created
+//  \Drupal::service('theme_installer')->install(['si_basetheme'], TRUE);
+//
+//  $config = \Drupal::service('config.factory')->getEditable('system.theme');
+//  $config->set('default', 'si_basetheme')->save();
+
+  //save custom block
+  $block = BlockContent::create([
+    'info' => 'SI Logo',
+    'type' => 'basic',
+    'body' => [
+      'value' => '
+					<div class="wrapper-logo"><a href="https://si.edu" target="_blank"><img alt=" " height="36" src="/themes/custom/si_basetheme/images/si-logo-white.png" width="138" /><span class="sr-only">Smithsonian main website</span></a></div>',
+      'format' => 'full_html',
+    ],
+  ]);
+
+  $block->save();
+  $uuid = $block->uuid();
+  $blockContent =  Block::create([
+    'id' => 'prefacelogo',
+    'plugin' => 'block_content:' . $uuid,
+    'region' => 'header_preface_left',
+    'theme' => \Drupal::config('system.theme')->get('default'),
+    'visibility' => array(),
+  ]);
+  $blockContent->save();
+
+  $blockContent2 =  Block::create([
+    'id' => 'footerlogo',
+    'plugin' => 'block_content:' . $uuid,
+    'region' => 'footer_top_left',
+    'theme' => \Drupal::config('system.theme')->get('default'),
+    'visibility' => array(),
+  ]);
+  $blockContent2->save();
+
+  //save default social media and footer links
+  smithsonian_create_menus();
+
+  // Enable the Smithsonian Displays module. This can't be specified as a dependency
+  // in the smithsonian.info.yml file, as it requires the manage_display module which can't be enabled during installation.
+//  \Drupal::service('module_installer')->install(['si_content'], TRUE);
+ // smithsonian_ldap_settings();
+}
+
+
+function smithsonian_create_menus() {
+  $menus = [
+    'social-media',
+    'footer'
+  ];
+  $menu_links = [];
+  $config_install_path = \Drupal::service('extension.list.profile')->getPath('smithsonian') . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+
+  foreach($menus as $menu_name) {
+    $controller = \Drupal::entityTypeManager()->getStorage('menu');
+    $menu = $controller->load($menu_name);
+    if (empty($menu)) {
+      $settings_config_files = \Drupal::service('file_system')
+        ->scanDirectory($config_install_path, '/^system.menu.' . $menu_name . '.yml$/i');
+      // \Drupal::service('config.factory')->getEditable('example.settings');
+      if (isset($settings_config_files) && is_array($settings_config_files)) {
+        foreach ($settings_config_files as $settings_config_file) {
+          $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+          $settings_config_file_data = (array) Yaml::parse($settings_config_file_content);
+          $config = \Drupal::service('config.factory')
+            ->getEditable($settings_config_file->name);
+          $config->setData($settings_config_file_data)->save();
+        }
+      }
+    }
+  }
+  $items = [
+    ['title' => 'Facebook',
+      'uri' => 'https://www.facebook.com/Smithsonian',
+      'menu' => 'social-media',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+          'class' => [
+            'fa',
+            'fa-facebook'
+          ]
+        ]
+      ]
+    ],
+    ['title' => 'Twitter',
+      'uri' => 'https://twitter.com/smithsonian',
+      'menu' => 'social-media',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+          'class' => [
+            'fa',
+            'fa-twitter'
+          ]
+        ]
+      ]
+    ],
+    ['title' => 'Instagram',
+      'uri' => 'https://instagram.com/smithsonian',
+      'menu' => 'social-media',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+          'class' => [
+            'fa',
+            'fa-instagram'
+          ]
+        ]
+      ]
+    ],
+    ['title' => 'Pinterest',
+      'uri' => 'https://www.pinterest.com/smithsonian',
+      'menu' => 'social-media',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+          'class' => [
+            'fa',
+            'fa-pinterest'
+          ]
+        ]
+      ]
+    ],
+    ['title' => 'Privacy',
+      'uri' => 'https://www.si.edu/privacy',
+      'menu' => 'footer',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+        ]
+      ]
+    ],
+    ['title' => 'Terms of Use',
+      'uri' => 'https://www.si.edu/Termsofuse',
+      'menu' => 'footer',
+      'options' => [
+        'attributes' => [
+          'target' => '_blank',
+        ]
+      ]
+    ],
+  ];
+  foreach($items as $item) {
+    $existing = \Drupal::entityTypeManager()->getStorage('menu_link_content')
+      ->loadByProperties(['title' => $item['title'], 'menu_name' => $item['menu']]);
+    if (empty($existing)) {
+      $menu_link = MenuLinkContent::create([
+        'title' => $item['title'],
+        'link' => ['uri' => $item['uri']],
+        'menu_name' => $item['menu'],
+        'options' => $item['options']
+      ]);
+      $menu_link->save();
+    }
+  }
+}
+
+/**
+ * update additional_html variable for addtoany.settings
+ */
+function smithsonian_update_8101() {
+  $moduleHandler = \Drupal::service('module_handler');
+  if ($moduleHandler->moduleExists('addtoany')) {
+
+    $config_install_path = \Drupal::service('extension.list.profile')->getPath('smithsonian') . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
+    if (is_dir($config_install_path)) {
+      // scan directory for config.
+      $settings_config_files = \Drupal::service('file_system')
+        ->scanDirectory($config_install_path, '/^addtoany.settings.yml$/i');
+      // \Drupal::service('config.factory')->getEditable('example.settings');
+      if (isset($settings_config_files) && is_array($settings_config_files)) {
+        foreach ($settings_config_files as $settings_config_file) {
+          $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+          $settings_config_file_data = (array) Yaml::parse($settings_config_file_content);
+          $config = \Drupal::service('config.factory')
+            ->getEditable($settings_config_file->name);
+          $config->set('additional_html', $settings_config_file_data['additional_html'])
+            ->save();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * update binddn and bindpw variables for ldap_servers
+ */
+//function smithsonian_update_8102() {
+//  $moduleHandler = \Drupal::service('module_handler');
+//  if ($moduleHandler->moduleExists('ldap_servers')) {
+//    smithsonian_ldap_settings();
+//  }
+//}
+//
+///**
+// * update ldap settings but keep password
+// */
+//function smithsonian_update_8103() {
+//  $moduleHandler = \Drupal::service('module_handler');
+//  if ($moduleHandler->moduleExists('ldap_servers')) {
+//
+//    $config_install_path = \Drupal::service('extension.list.profile')->getPath('smithsonian') . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
+//    $ldap_files = [
+//      'ldap_authentication.settings',
+//      'ldap_user.settings'
+//    ];
+//
+//    if (is_dir($config_install_path)) {
+//      // scan directory for config.
+//      foreach ($ldap_files as $setting_name) {
+//        $settings_config_files = \Drupal::service('file_system')
+//          ->scanDirectory($config_install_path, '/^' . $setting_name . '.yml$/i');
+//        // \Drupal::service('config.factory')->getEditable('example.settings');
+//        if (isset($settings_config_files) && is_array($settings_config_files)) {
+//          foreach ($settings_config_files as $settings_config_file) {
+//            $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+//            $settings_config_file_data = (array) Yaml::parse($settings_config_file_content);
+//            $config = \Drupal::service('config.factory')
+//              ->getEditable($settings_config_file->name);
+//            $config->setData($settings_config_file_data)->save();
+//          }
+//        }
+//      }
+//    }
+//    smithsonian_ldap_settings();
+//  }
+//}
+
+
+/**
+ * make footer and social media menu item editable
+ */
+function smithsonian_update_8102() {
+  drupal_flush_all_caches();
+
+  $mids = \Drupal::entityQuery('menu_link_content')
+    ->condition('menu_name', 'social_media')
+    ->execute();
+  if ($mids) {
+    $controller = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    $entities = $controller->loadMultiple($mids);
+    $controller->delete($entities);
+  }
+  $controller = \Drupal::entityTypeManager()->getStorage('menu');
+  $menu = $controller->load('social_media');
+  if ($menu) {
+    $menu->delete();
+  }
+
+  smithsonian_create_menus();
+}
+
+/**
+ * update metatag.metatag_defaults.node.yml
+ * to fix og_description token
+ */
+function smithsonian_update_8103() {
+  $config_install_path = \Drupal::service('extension.list.profile')->getPath('smithsonian') . '/' . Drupal\Core\Config\InstallStorage::CONFIG_INSTALL_DIRECTORY;
+  if (is_dir($config_install_path)) {
+    // scan directory for config.
+    $settings_config_files = \Drupal::service('file_system')
+      ->scanDirectory($config_install_path, '/^metatag.metatag_defaults.node.yml$/i');
+    // \Drupal::service('config.factory')->getEditable('example.settings');
+    if (isset($settings_config_files) && is_array($settings_config_files)) {
+      foreach ($settings_config_files as $settings_config_file) {
+        $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+        $settings_config_file_data = (array) Symfony\Component\Yaml\Yaml::parse($settings_config_file_content);
+        $config = \Drupal::service('config.factory')->getEditable($settings_config_file->name);
+        $config->set('og_description', $settings_config_file_data['og_description'])->save();
+      }
+    }
+  }
+}

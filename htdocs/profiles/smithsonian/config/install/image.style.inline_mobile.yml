@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: inline_mobile
+label: 'Inline Mobile'
+effects:
+  9b8a96dc-f107-444b-be01-81c936cbec5f:
+    uuid: 9b8a96dc-f107-444b-be01-81c936cbec5f
+    id: image_scale
+    weight: 1
+    data:
+      width: 600
+      height: null
+      upscale: false
