@@ -22,26 +22,6 @@
                 }
             }
         },
-        {
-            "type": "vcs",
-            "url": "git@github.com:Smithsonian/si_d8_basetheme.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:Smithsonian/si_d8_admintheme.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:Smithsonian/si_d8_content.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:Smithsonian/d8-edan-module.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:Smithsonian/si_video.git"
-        }
     ],
     "require": {
         "composer/installers": "^1.9",
