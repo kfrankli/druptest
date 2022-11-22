@@ -21,13 +21,13 @@
                     "verify_peer": false
                 }
             }
-        },
+        }
     ],
     "require": {
         "composer/installers": "^1.9",
         "cweagans/composer-patches": "^1.7",
         "drupal/addtoany": "^1.10",
-        "drupal/admin_toolbar": "^2.2",
+        "drupal/admin_toolbar": "^3.2",
         "drupal/allowed_formats": "^1.1",
         "drupal/autologout": "^1.0",
         "drupal/backup_migrate": "^5.0",
@@ -54,6 +54,7 @@
         "drupal/extlink": "^1.6",
         "drupal/features": "^3.8",
         "drupal/feeds": "^3.0@alpha",
+        "drupal/feeds_ex": "^1.0@beta",
         "drupal/feeds_tamper": "^2.0@beta",
         "drupal/field_group": "3.x-dev",
         "drupal/field_tools": "1.x-dev",
@@ -65,7 +66,6 @@
         "drupal/layout_paragraphs_restriction": "^1.0@alpha",
         "drupal/ldap": "^4.0",
         "drupal/linkit": "^6.0",
-        "drupal/manage_display": "^1.0@alpha",
         "drupal/masonry": "^1.2",
         "drupal/maxlength": "^1.0@beta",
         "drupal/menu_breadcrumb": "^1.8",
@@ -99,6 +99,7 @@
         "drupal/views_data_export": "^1.1",
         "drupal/viewsreference": "^1.2",
         "drupal/webform": "^6.0",
+        "drupal/webform_views": "^5.0",
         "drupal/xmlsitemap": "^1.0",
         "drush/drush": "^10.0.0",
         "oomphinc/composer-installers-extender": "^2.0",
