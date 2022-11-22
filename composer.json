@@ -122,10 +122,6 @@
         "drupal/xmlsitemap": "^1.0",
         "drush/drush": "^10.0.0",
         "oomphinc/composer-installers-extender": "^2.0",
-        "smithsonian/si_admin": "dev-layout_paragraphs",
-        "smithsonian/si_basetheme": "dev-master",
-        "smithsonian/si_content": "dev-layout_paragraphs",
-        "smithsonian/si_video": "dev-main",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "conflict": {
