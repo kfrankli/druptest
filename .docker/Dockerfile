@@ -20,7 +20,7 @@ WORKDIR /var/www/html
 
 # Run composer install to install PHP dependencies
 # --no-scripts --no-dev to skip any scripts and dev dependencies for production
-RUN composer install --no-scripts --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+#RUN composer install --no-scripts --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 
 # Stage 2: Nginx setup
 FROM nginx:latest
