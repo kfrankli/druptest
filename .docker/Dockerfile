@@ -6,12 +6,11 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip mysqli pdo pdo_mysql
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Assuming Drupal files are in the root of your build context,
 # Copy application code into the image
 COPY . /var/www/html
 
@@ -19,8 +18,9 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Run composer install to install PHP dependencies
-# --no-scripts --no-dev to skip any scripts and dev dependencies for production
-#RUN composer install --no-scripts --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+RUN composer install --no-scripts --no-dev --optimize-autoloader
+
+# Note: If your application requires additional PHP extensions, install them here.
 
 # Stage 2: Nginx setup
 FROM nginx:latest
@@ -41,7 +41,7 @@ RUN mkdir -p /var/cache/nginx/client_temp \
 # Switch to the nginx user for subsequent commands and runtime
 USER nginx
 
-# Copy the Nginx configuration and application code
+# Copy the Nginx configuration and application code from the php-stage
 COPY --chown=nginx:nginx .docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=nginx:nginx --from=php-stage /var/www/html /var/www/html
 
