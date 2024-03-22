@@ -18,7 +18,7 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Run composer install to install PHP dependencies
-RUN composer install --no-scripts --no-dev --optimize-autoloader
+# disable for now: RUN composer install --no-scripts --no-dev --optimize-autoloader
 
 # Note: If your application requires additional PHP extensions, install them here.
 
