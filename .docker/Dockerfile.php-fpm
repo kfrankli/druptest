@@ -14,6 +14,6 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 # Run Composer to install the dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+# disable for now: RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 
 # Use the default CMD of the base image, which starts PHP-FPM
