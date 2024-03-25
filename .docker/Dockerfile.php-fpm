@@ -15,16 +15,22 @@ RUN apt-get update && apt-get install -y \
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Set working directory
 WORKDIR /var/www/html
 
 # Copy only the composer.json and composer.lock to install dependencies
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+# Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-RUN composer drupal:scaffold && ls -la htdocs/
 
+# There's usually no need to manually run `composer drupal:scaffold`
+# as it should be automatically triggered by `composer install` if configured correctly.
+# If you still wish to explicitly run a post-install command, make sure it's necessary and correct.
+# RUN composer drupal:scaffold && ls -la htdocs/
 
 # Copy the application code
 COPY . /var/www/html
