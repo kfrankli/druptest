@@ -1,12 +1,17 @@
-FROM nginx:latest
+server {
+    listen 80;
+    server_name localhost;
 
-# Create the directory for the shared volume if using Unix socket for communication
-# RUN mkdir -p /var/run/php
+    root /var/www/html;
+    index index.php;
 
-# Copy the Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+    location / {
+        try_files $uri $uri/ =404;
+    }
 
-# Expose port 8080 for external access
-EXPOSE 8080
-
-CMD ["nginx", "-g", "daemon off;"]
+    location ~ \.php$ {
+        fastcgi_pass localhost:9000;  # Forward PHP requests to PHP-FPM using localhost
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
