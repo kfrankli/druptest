@@ -24,4 +24,4 @@ COPY . /var/www/html
 
 # Use Composer to install PHP dependencies
 # If you need to ignore the platform reqs, you can uncomment the next line
-# RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+composer install --no-dev --optimize-autoloader --ignore-platform-reqs
