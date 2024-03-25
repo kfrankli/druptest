@@ -23,6 +23,8 @@ COPY composer.json composer.lock ./
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+RUN composer drupal:scaffold && ls -la htdocs/
+
 
 # Copy the application code
 COPY . /var/www/html
