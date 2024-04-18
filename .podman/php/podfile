@@ -1,0 +1,32 @@
+FROM php:8.2-fpm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    default-mysql-client \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    unzip \
+    git \
+    && docker-php-ext-install -j$(nproc) zip mysqli pdo pdo_mysql \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+
+# Install Composer globally
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy only the composer.json and composer.lock to install dependencies
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies, ignoring platform reqs
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Copy the application code
+COPY . /var/www/html
