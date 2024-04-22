@@ -22,11 +22,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy only the composer.json and composer.lock to install dependencies
-COPY composer.json composer.lock ./
+# Copy the application code
+COPY * ./
 
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Copy the application code
-COPY . /var/www/html
+
