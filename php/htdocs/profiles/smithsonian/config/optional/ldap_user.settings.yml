@@ -1,0 +1,19 @@
+drupalAcctProvisionServer: si_usdc01
+ldapEntryProvisionServer: null
+drupalAcctProvisionTriggers:
+  - drupal_on_login
+  - drupal_on_update_create
+ldapEntryProvisionTriggers: {  }
+userUpdateCronQuery: none
+userUpdateCronInterval: daily
+orphanedDrupalAcctBehavior: ldap_user_orphan_do_not_check
+orphanedCheckQty: 100
+orphanedAccountCheckInterval: weekly
+userConflictResolve: resolve
+manualAccountConflict: conflict_reject
+acctCreation: ldap_behaviour
+ldapUserSyncMappings:
+  drupal: {  }
+  ldap: {  }
+disableAdminPasswordField: false
+orphanedDrupalAcctReportingInbox: ''

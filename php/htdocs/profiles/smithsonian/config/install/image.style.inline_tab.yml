@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: inline_tab
+label: 'Inline Tab'
+effects:
+  ab37358f-5da8-4894-bfab-f69639f9cf8e:
+    uuid: ab37358f-5da8-4894-bfab-f69639f9cf8e
+    id: image_scale
+    weight: 1
+    data:
+      width: 980
+      height: null
+      upscale: false

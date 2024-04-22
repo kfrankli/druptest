@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: inline_large
+label: 'Inline Large'
+effects:
+  16154643-3ec7-43ee-a44f-19027176c064:
+    uuid: 16154643-3ec7-43ee-a44f-19027176c064
+    id: image_scale
+    weight: 1
+    data:
+      width: 1600
+      height: null
+      upscale: false

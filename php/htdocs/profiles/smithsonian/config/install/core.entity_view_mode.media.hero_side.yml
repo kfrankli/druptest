@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media.hero_side
+label: 'Hero Side'
+targetEntityType: media
+cache: true

@@ -1,0 +1,11 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - paragraphs.paragraphs_type.tile_layout
+id: paragraph.tile_layout.default
+targetEntityType: paragraph
+bundle: tile_layout
+mode: default
+content: {  }
+hidden: {  }

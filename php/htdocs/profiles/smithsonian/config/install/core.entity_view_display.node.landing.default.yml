@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.landing.field_bg_image_type
+    - field.field.node.landing.field_block_content
+    - field.field.node.landing.field_hero_image
+    - field.field.node.landing.field_hero_type
+    - field.field.node.landing.field_image
+    - field.field.node.landing.field_show_title
+    - field.field.node.landing.field_slideshow
+    - field.field.node.landing.field_tagline
+    - field.field.node.landing.field_teaser
+    - field.field.node.landing.field_tiles
+    - node.type.landing
+  module:
+    - layout_paragraphs
+    - user
+id: node.landing.default
+targetEntityType: node
+bundle: landing
+mode: default
+content:
+  field_block_content:
+    type: layout_paragraphs
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  node_link:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden:
+  addtoany: true
+  field_bg_image_type: true
+  field_hero_image: true
+  field_hero_type: true
+  field_image: true
+  field_show_title: true
+  field_slideshow: true
+  field_tagline: true
+  field_teaser: true
+  field_tiles: true

@@ -1,0 +1,22 @@
+sids:
+  si_usdc01: si_usdc01
+authenticationMode: exclusive
+loginUIUsernameTxt: 'Provide your SI User Name'
+loginUIPasswordTxt: 'Provide your SI Password'
+ldapUserHelpLinkUrl: ''
+ldapUserHelpLinkText: ''
+emailOption: remove
+emailUpdate: update_notify
+emailTemplateHandling: none
+emailTemplate: '@username@example.com'
+emailTemplateUsageResolveConflict: false
+emailTemplateUsageNeverUpdate: false
+emailTemplateUsagePromptUser: false
+emailTemplateUsageRedirectOnLogin: false
+emailTemplateUsagePromptRegex: '.*@example\\.com'
+passwordOption: hide
+allowOnlyIfTextInDn: {  }
+excludeIfTextInDn: {  }
+excludeIfNoAuthorizations: false
+langcode: en
+skipAdministrators: false

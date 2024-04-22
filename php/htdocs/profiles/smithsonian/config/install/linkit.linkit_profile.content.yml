@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+label: Content
+id: content
+description: ''
+matchers:
+  1069e502-5865-4629-8d71-13f9d21e7672:
+    id: 'entity:node'
+    uuid: 1069e502-5865-4629-8d71-13f9d21e7672
+    settings:
+      metadata: ''
+      bundles:
+        landing_page: landing_page
+        page: page
+      group_by_bundle: true
+      substitution_type: canonical
+      limit: 100
+      include_unpublished: false
+    weight: 0

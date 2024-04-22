@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_teaser
+    - node.type.landing
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    allowed_formats:
+      - title
+id: node.landing.field_teaser
+field_name: field_teaser
+entity_type: node
+bundle: landing
+label: 'Teaser Text'
+description: 'Teaser text is used for social media posts and teaser view of the page.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

@@ -1,0 +1,10 @@
+site_key: 6Lf6MvsSAAAAAJ9ppc2A8qMQCUtxy8OsZgbrVugP
+secret_key: 6Lf6MvsSAAAAAJrb3gYNmlisiGfJnvxh4Qdxnno3
+verify_hostname: false
+use_globally: false
+widget:
+  theme: light
+  type: image
+  size: ''
+  tabindex: 0
+  noscript: false
