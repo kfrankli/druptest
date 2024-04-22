@@ -30,6 +30,9 @@ COPY composer.lock .
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
+ADD htdocs /var/www/html
+ADD private /var/www/html
+
 # Adjust permissions as needed
 RUN chown -R 1001:0 . && chmod -R g=u .
 
