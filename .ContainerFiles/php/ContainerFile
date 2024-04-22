@@ -1,6 +1,8 @@
 # Use Red Hat's Universal Base Image with PHP 8.1
 FROM registry.access.redhat.com/ubi9/php-81
 
+USER root
+
 # Install system dependencies
 RUN yum update -y && yum install -y \
     mariadb \
