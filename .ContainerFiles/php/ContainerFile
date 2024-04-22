@@ -12,9 +12,6 @@ RUN yum update -y && yum install -y \
     git \
     && yum clean all
 
-# PHP extensions are typically pre-configured in Red Hat's PHP images
-# If additional extensions are needed, use `yum install` or pecl as necessary.
-
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
