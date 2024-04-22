@@ -19,10 +19,13 @@ RUN yum update -y && yum install -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory to where the PHP code should reside
-WORKDIR /var/www/html
+#WORKDIR /var/www/html
 
 # Copy the application code from the relative path of Dockerfile to the working directory
-ADD * .
+ADD htdocs /var/www/html
+ADD private /var/www/html
+COPY composer.json .
+COPY composer.lock .
 
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
