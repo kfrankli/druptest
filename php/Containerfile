@@ -34,7 +34,7 @@ COPY httpd.conf /etc/httpd/conf/httpd.conf
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 RUN echo "test webpage" > /var/www/html/index.html
-RUN chown default:default /var/www/html/index.html
+RUN chown default:root /var/www/html/index.html
 
 # Adjust permissions as needed
 # RUN chown -R 1001:0 . && chmod -R g=u .
