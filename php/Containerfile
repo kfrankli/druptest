@@ -20,18 +20,19 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Set working directory to where the PHP code should reside
 #WORKDIR /var/www/html
-# RUN mkdir -p /var/www/html/{private,htdocs}
+ RUN mkdir htdocs
+RUN mkdir private
 
 # Copy the application code from the relative path of Dockerfile to the working directory
-ADD htdocs/ .
-ADD private/ .
+ADD htdocs/ htdocs/
+ADD private/ private/
 
 COPY composer.json .
 COPY composer.lock .
 COPY httpd.conf /etc/httpd/conf/httpd.conf
 
 RUN echo "test webpage" > index.html
-RUN chown -R default:root /var/www/html/
+RUN chcon -R -t httpd_sys_content_t .
 RUN chown -R default:root .
 
 # Run as non-root user
