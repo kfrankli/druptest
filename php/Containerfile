@@ -30,6 +30,7 @@ ADD private/ private/
 COPY composer.json .
 COPY composer.lock .
 COPY httpd.conf /etc/httpd/conf/httpd.conf
+COPY info.php .
 
 RUN echo "test webpage" > index.html
 RUN chcon -R -t httpd_sys_content_t .
