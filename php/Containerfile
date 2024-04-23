@@ -33,6 +33,8 @@ COPY httpd.conf /etc/httpd/conf/httpd.conf
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
+RUN echo "test webpage" > /var/www/html/index.html
+
 # Adjust permissions as needed
 # RUN chown -R 1001:0 . && chmod -R g=u .
 
