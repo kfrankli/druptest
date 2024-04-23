@@ -15,6 +15,6 @@ EXPOSE 8080
 
 USER default
 
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]
 
 CMD /usr/libexec/s2i/run
