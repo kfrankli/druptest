@@ -1,5 +1,0 @@
-form:
-  version: VERSION
-  css:
-    theme:
-      css/si-profile-forms.css: {}

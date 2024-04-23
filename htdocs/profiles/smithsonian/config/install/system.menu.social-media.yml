@@ -1,7 +1,0 @@
-langcode: en
-status: true
-dependencies: {  }
-id: social-media
-label: 'Social Media'
-description: 'Site social media links'
-locked: false
