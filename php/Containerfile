@@ -27,6 +27,7 @@ ADD htdocs /var/www/html/htdocs/
 ADD private /var/www/html/private/
 COPY composer.json .
 COPY composer.lock .
+COPY httpd.conf /etc/httpd/conf/httpd.conf
 
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
