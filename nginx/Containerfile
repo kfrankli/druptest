@@ -10,6 +10,9 @@ USER root
 COPY nginx.conf /etc/nginx/nginx.conf
 RUN chown default:root /etc/nginx/nginx.conf
 
+RUN mkdir -p /opt/app-root/src/logs/
+RUN chown -R default:root /opt/app-root/src/logs/
+
 # Expose port 8080 for external access
 EXPOSE 8080
 
