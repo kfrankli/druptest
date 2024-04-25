@@ -1,0 +1,73 @@
+name: Smithsonain
+description: 'Smithsonian Baseline installation profile'
+type: profile
+core_version_requirement: ^8 || ^9
+install:
+  - history
+  - big_pipe
+  - ckeditor
+  - config
+  - contextual
+  - menu_link_content
+  - datetime
+  - quickedit
+  - editor
+  - help
+  - menu_ui
+  - page_cache
+  - dynamic_page_cache
+  - taxonomy
+  - dblog
+  - toolbar
+  - block_content
+  - field_ui
+  - rdf
+  - views_ui
+  - automated_cron
+  - responsive_image
+  - inline_form_errors
+  - ctools
+  - pathauto
+  - maxlength
+  - menu_link_attributes
+  - field_group
+  - conditional_fields
+  - linkit
+  - extlink
+  - node_revision_delete
+  - responsive_image
+  - addtoany
+  - autologout
+  - metatag
+  - metatag_favicons
+  - metatag_open_graph
+  - metatag_twitter_cards
+  - metatag_views
+  - schema_article
+  - schema_metatag
+  - schema_organization
+  - schema_video_object
+  - schema_web_page
+  - schema_web_site
+  - slick
+  - slick_ui
+  - slick_entityreference
+  - menu_breadcrumb
+  - noreqnewpass
+  - admin_toolbar
+  - admin_toolbar_tools
+  - transliterate_filenames
+  - layout_paragraphs_restriction
+  - si_video
+dependencies:
+  - node
+  - media
+  - breakpoint
+  - views
+  - layout_paragraphs
+  - si_content
+
+themes:
+  - claro
+  - si_admin
+  - si_basetheme

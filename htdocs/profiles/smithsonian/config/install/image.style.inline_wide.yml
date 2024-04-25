@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: inline_wide
+label: 'Inline Wide'
+effects:
+  5f33e8be-4c0a-4338-98e9-7d090dd6d0f9:
+    uuid: 5f33e8be-4c0a-4338-98e9-7d090dd6d0f9
+    id: image_scale
+    weight: 1
+    data:
+      width: 2560
+      height: null
+      upscale: false

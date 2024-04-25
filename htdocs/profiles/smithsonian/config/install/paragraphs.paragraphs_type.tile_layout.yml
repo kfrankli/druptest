@@ -1,0 +1,15 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - layout_paragraphs
+id: tile_layout
+label: 'Tile Layout'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins:
+  layout_paragraphs:
+    enabled: true
+    available_layouts:
+      si_layout_tiles: 'SI Tiles Layout'

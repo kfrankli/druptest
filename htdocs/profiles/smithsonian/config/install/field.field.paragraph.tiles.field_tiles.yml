@@ -1,0 +1,74 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_tiles
+    - paragraphs.paragraphs_type.linked_text_block
+    - paragraphs.paragraphs_type.tile
+    - paragraphs.paragraphs_type.tile_layout
+    - paragraphs.paragraphs_type.tiles
+  module:
+    - entity_reference_revisions
+    - si_content
+id: paragraph.tiles.field_tiles
+field_name: field_tiles
+entity_type: paragraph
+bundle: tiles
+label: Tiles
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      linked_text_block: linked_text_block
+      tile: tile
+      tile_layout: tile_layout
+    negate: 0
+    target_bundles_drag_drop:
+      captioned_image:
+        weight: 17
+        enabled: false
+      hero_image:
+        weight: 18
+        enabled: false
+      layout:
+        weight: 19
+        enabled: false
+      linked_text_block:
+        weight: 20
+        enabled: true
+      responsive_tabs:
+        weight: 21
+        enabled: false
+      slide:
+        weight: 22
+        enabled: false
+      slideshow:
+        weight: 23
+        enabled: false
+      tab_content:
+        weight: 24
+        enabled: false
+      text_block:
+        weight: 25
+        enabled: false
+      tile:
+        weight: 26
+        enabled: true
+      tile_layout:
+        weight: 29
+        enabled: true
+      tiles:
+        weight: 27
+        enabled: false
+      video:
+        weight: 31
+        enabled: false
+      view_embed:
+        weight: 32
+        enabled: false
+field_type: entity_reference_revisions

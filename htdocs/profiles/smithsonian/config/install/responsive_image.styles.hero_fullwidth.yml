@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.inline_desk
+    - image.style.inline_large
+    - image.style.inline_mobile
+    - image.style.inline_tab
+    - image.style.inline_wide
+  theme:
+    - si_basetheme
+id: hero_fullwidth
+label: 'Hero Fullwidth'
+image_style_mappings:
+  -
+    image_mapping_type: image_style
+    image_mapping: inline_wide
+    breakpoint_id: si_basetheme.wider
+    multiplier: 1x
+  -
+    image_mapping_type: image_style
+    image_mapping: inline_large
+    breakpoint_id: si_basetheme.wide
+    multiplier: 1x
+  -
+    image_mapping_type: image_style
+    image_mapping: inline_desk
+    breakpoint_id: si_basetheme.standard
+    multiplier: 1x
+  -
+    image_mapping_type: image_style
+    image_mapping: inline_tab
+    breakpoint_id: si_basetheme.tab
+    multiplier: 1x
+  -
+    image_mapping_type: image_style
+    image_mapping: inline_mobile
+    breakpoint_id: si_basetheme.mobile
+    multiplier: 1x
+breakpoint_group: si_basetheme
+fallback_image_style: inline_desk
