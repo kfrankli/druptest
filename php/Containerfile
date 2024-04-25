@@ -1,41 +1,41 @@
 # Use Red Hat's Universal Base Image with PHP 8.1
-FROM registry.access.redhat.com/ubi9/php-81
-
+#FROM registry.access.redhat.com/ubi9/php-81
+FROM php:8.2-fpm
 USER root
 
 # Install system dependencies
-RUN yum update -y && yum install -y \
-    mariadb \
-    freetype \
-    libjpeg-turbo \
-    libpng \
-    libzip \
-    unzip \
-    git \
-    vim-minimal \
-    && yum clean all
+#RUN yum update -y && yum install -y \
+    #mariadb \
+    #freetype \
+   # libjpeg-turbo \
+    #libpng \
+    #libzip \
+    #unzip \
+    #git \
+    #vim-minimal \
+    #&& yum clean all
+RUN apt-get update && apt-get install vim -y
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory to where the PHP code should reside
-#WORKDIR /var/www/html
- RUN mkdir htdocs
-RUN mkdir private
+#WORKDIR /var/www/html/
+RUN mkdir -p /var/www/html/{htdocs,private}
 
 # Copy the application code from the relative path of Dockerfile to the working directory
-ADD htdocs/ htdocs/
-ADD private/ private/
+ADD htdocs/ /var/www/html/htdocs/
+ADD private/ /var/www/html/private/
 
 COPY composer.json .
 COPY composer.lock .
-COPY httpd.conf /etc/httpd/conf/httpd.conf
-COPY info.php .
+#COPY httpd.conf /etc/httpd/conf/httpd.conf
+COPY info.php /var/www/html/info.php
 
 RUN echo "test webpage" > index.html
 RUN chcon -R -t httpd_sys_content_t .
 RUN chown -R default:root .
-
+RUN chmod 775 -R /var/www/html/
 # Run as non-root user
  USER default
 
