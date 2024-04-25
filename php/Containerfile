@@ -33,8 +33,8 @@ COPY composer.lock .
 COPY info.php /var/www/html/info.php
 
 RUN echo "test webpage" > index.html
-RUN chcon -R -t httpd_sys_content_t .
-RUN chown -R default:root .
+#RUN chcon -R -t httpd_sys_content_t .
+#RUN chown -R default:root .
 RUN chmod 775 -R /var/www/html/
 # Run as non-root user
  USER default
