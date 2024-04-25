@@ -4,17 +4,15 @@ FROM php:8.2-fpm
 USER root
 
 # Install system dependencies
-#RUN yum update -y && yum install -y \
-    #mariadb \
-    #freetype \
-   # libjpeg-turbo \
-    #libpng \
-    #libzip \
-    #unzip \
-    #git \
-    #vim-minimal \
-    #&& yum clean all
-RUN apt-get update && apt-get install vim -y
+RUN apt-get update -y && apt-get install -y \
+    mariadb \
+    freetype \
+    libjpeg-turbo \
+    libpng \
+    libzip \
+    unzip \
+    git \
+    vim-minimal 
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
