@@ -2,6 +2,9 @@
 #FROM registry.access.redhat.com/ubi9/php-81
 FROM php:8.2-fpm
 USER root
+RUN mkdir -p app/htdocs && mkdir -p app/private
+ADD htdocs/ app/htdocs/
+ADD private/ app/private/
 
 # Install system dependencies
 RUN apt-get update -y && apt-get install -y default-mysql-client libfreetype6-dev libjpeg62-turbo-dev libpng-dev libzip-dev vim git unzip
@@ -15,16 +18,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Set working directory to where the PHP code should reside
 #WORKDIR /var/www/html/
-RUN mkdir -p /var/www/html/{htdocs,private}
 
 # Copy the application code from the relative path of Dockerfile to the working directory
-ADD htdocs/ /var/www/html/htdocs/
-ADD private/ /var/www/html/private/
+
 
 COPY composer.json .
 COPY composer.lock .
 #COPY httpd.conf /etc/httpd/conf/httpd.conf
-COPY info.php /var/www/html/info.php
+COPY info.php app/info.php
 
 RUN echo "test webpage" > index.html
 #RUN chcon -R -t httpd_sys_content_t .
