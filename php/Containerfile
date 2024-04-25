@@ -37,7 +37,7 @@ RUN echo "test webpage" > index.html
 #RUN chown -R default:root .
 RUN chmod 775 -R /var/www/html/
 # Run as non-root user
- USER default
+ #USER default
 
 # Install PHP dependencies, ignoring platform reqs
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
@@ -50,4 +50,4 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 
 # Set the default command for the resulting image
-CMD /usr/libexec/s2i/run
+#CMD /usr/libexec/s2i/run
