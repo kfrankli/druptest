@@ -1,5 +1,6 @@
 # Use Red Hat's Universal Base Image with PHP 8.1
 #FROM registry.access.redhat.com/ubi9/php-81
+#using this image from dockerhub since fpm works with it for test purposes
 FROM php:8.2-fpm
 USER root
 RUN mkdir -p /opt/app/htdocs && mkdir -p /opt/app/private
