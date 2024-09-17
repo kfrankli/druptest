@@ -157,13 +157,13 @@
     EOF
     ```
 
-    9.  Check that the pod comes up:
+9.  Check that the pod comes up:
 
     ```console
     oc get pods
     ```
 
-    10. Create a service
+10. Create a service
 
     ```console
     oc apply -f - <<EOF
@@ -190,7 +190,7 @@
     EOF
     ```
 
-    11. Create a php route
+11. Create a php route
     
     ```console
     oc apply -f - <<EOF
@@ -212,7 +212,7 @@
     EOF
     ```
 
-    12. Create a DeploymentConfig for the nginx component
+12. Create a DeploymentConfig for the nginx component
 
     ```console
     oc apply -f - <<EOF
@@ -259,13 +259,13 @@
     EOF
     ```
 
-    13. Check that the pod comes up:
+13. Check that the pod comes up:
 
     ```console
     oc get pods
     ```
 
-    14. Create a nginx service
+14. Create a nginx service
 
     ```console
     oc apply -f - <<EOF
@@ -292,7 +292,7 @@
     EOF
     ```
 
-    15. Create a nginx route
+15. Create a nginx route
     
     ```console
     oc apply -f - <<EOF
@@ -314,13 +314,13 @@
     EOF
     ```
 
-    16. Find the route name for nginx
+16. Find the route name for nginx
 
     ```console
     oc get route nginx
     ```
 
-    17. Use curl to confirm it's deployed
+17. Use curl to confirm it's deployed
 
     ```console
     curl nginx-druptest.apps.cluster-swzqb.swzqb.sandbox1915.opentlc.com
