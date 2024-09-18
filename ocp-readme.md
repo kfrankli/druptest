@@ -1,24 +1,69 @@
 # Smithsonian Institue Baseline Drupal Insallation OpenShift POC
 
-## Steps
+## Steps to create OCP Objects Manually
 
 1.  Login to OpenShift via command line
 
     ```console
-    $ oc login ...
+    oc login ...
     ```
 
 2.  Create a project to contain this
 
     ```console
-    $ oc new-project druptest
+    oc new-project druptest
     ```
 
 3.  Switch to the project (the create command will do this by default)
 
     ```console
-    $ oc project druptest
+    oc project druptest
     ```
+
+4.  Create a ConfigMap for htdocs
+    
+    ```console
+    oc create configmap htdocs --from-file=htdocs/
+    ```
+
+4.  Create a PVC (PersistantVolumeClaim) for nginx
+
+    ```console
+    oc apply -f - <<EOF
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: druptest-nginx-pvc
+      labels:
+        app: druptest-nginx-pvc
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+    EOF
+    ```
+
+4.  Create a PVC (PersistantVolumeClaim) for php
+
+    ```console
+    oc apply -f - <<EOF
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: druptest-php-pvc
+      labels:
+        app: druptest-php-pvc
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+    EOF
+    ```
+
 
 4.  Create a simple imagestream and buildconfig for the PHP component
 
@@ -137,6 +182,10 @@
           labels:
             deployment: php
         spec:
+          volumes:
+          - name: htdocs
+            persistentVolumeClaim:
+              claimName: druptest-php-pvc
           containers:
           - image: php-container-build:latest
             imagePullPolicy: Always
@@ -149,6 +198,9 @@
             resources: {}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
+            volumeMounts:
+            - name: htdocs
+              mountPath: "/opt/app/htdocs/"
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -175,14 +227,10 @@
       name: php
     spec:
       ports:
-      - name: 8080-tcp
-        port: 8080
+      - name: 9000-tcp
+        port: 9000
         protocol: TCP
-        targetPort: 8080
-      - name: 8443-tcp
-        port: 8443
-        protocol: TCP
-        targetPort: 8443
+        targetPort: 9000
       selector:
         deployment: php
       sessionAffinity: None
@@ -190,29 +238,7 @@
     EOF
     ```
 
-11. Create a php route
-    
-    ```console
-    oc apply -f - <<EOF
-    kind: Route
-    apiVersion: route.openshift.io/v1
-    metadata:
-      name: php
-      namespace: druptest
-      labels:
-        app: php
-    spec:
-      to:
-        kind: Service
-        name: php
-      tls: null
-      port:
-        targetPort: 8080-tcp
-      alternateBackends: []
-    EOF
-    ```
-
-12. Create a DeploymentConfig for the nginx component
+11. Create a DeploymentConfig for the nginx component
 
     ```console
     oc apply -f - <<EOF
@@ -241,6 +267,10 @@
           labels:
             deployment: nginx
         spec:
+          volumes:
+          - name: htdocs
+            persistentVolumeClaim:
+              claimName: druptest-nginx-pvc
           containers:
           - image: nginx-container-build:latest
             imagePullPolicy: Always
@@ -251,6 +281,9 @@
             resources: {}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
+            volumeMounts:
+            - name: htdocs
+              mountPath: "/var/www/htmlapp//"
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -259,13 +292,13 @@
     EOF
     ```
 
-13. Check that the pod comes up:
+12. Check that the pod comes up:
 
     ```console
     oc get pods
     ```
 
-14. Create a nginx service
+13. Create a nginx service
 
     ```console
     oc apply -f - <<EOF
@@ -292,7 +325,7 @@
     EOF
     ```
 
-15. Create a nginx route
+14. Create a nginx route
     
     ```console
     oc apply -f - <<EOF
@@ -314,20 +347,108 @@
     EOF
     ```
 
-16. Find the route name for nginx
+15. Find the route name for nginx
 
     ```console
     oc get route nginx
     ```
 
-17. Use curl to confirm it's deployed
+16. Use curl to confirm it's deployed
 
     ```console
     curl nginx-druptest.apps.cluster-swzqb.swzqb.sandbox1915.opentlc.com
     ```
 
+17. Make a Configmap with content from htdocs mounted at `/var/www/html/` for the S2I build.
+    Then make a PVC and replace with htdocs for the running containers
 
+19. nginx conf
 
+/opt/app/
+
+20. How to manually copy files
+
+    ```
+    oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
+    oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+    ```
+
+## Deploy via GitOps
+
+1.  Login to OpenShift via command line as a admin.
+
+    ```console
+    $ oc login ...
+    ```
+
+2.  Create GitOps namespace. For this command to work you *MUST* be a [cluster `admin` user in OCP RBAC](https://docs.openshift.com/container-platform/4.16/authentication/using-rbac.html).
+
+    ```console
+    $ oc create namespace openshift-gitops-operator
+    $ oc project openshift-gitops-operator
+    ```
+
+    The reason you're using the `oc create namespace` is running `oc new-project` will fail. For example:?
+
+    ```console
+    $ oc new-project openshift-gitops-operator
+    Error from server (Forbidden): project.project.openshift.io "openshift-gitops-operator" is forbidden: cannot request a project starting with "openshift-"
+    ```
+
+3.  Apply the `OperatorGroup` object.
+
+    ```console
+    oc apply -f - <<EOF
+    apiVersion: operators.coreos.com/v1
+    kind: OperatorGroup
+    metadata:
+      name: openshift-gitops-operator
+      namespace: openshift-gitops-operator
+    spec:
+      upgradeStrategy: Default
+    EOF
+    ```
+
+4.  Apply the Subscription object to subscribe the operator in the `openshift-gitops-operator` namespace.
+
+    ```console
+    oc apply -f - <<EOF
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: Subscription
+    metadata:
+      name: openshift-gitops-operator
+      namespace: openshift-gitops-operator
+    spec:
+      channel: latest 
+      installPlanApproval: Automatic
+      name: openshift-gitops-operator 
+      source: redhat-operators 
+      sourceNamespace: openshift-marketplace
+    EOF
+    ```
+
+5.  After the installation is complete, verify that all the pods in the `openshift-gitops` namespace are running. This can take a few minutes depending on your network to even return anything.
+
+    ```console
+    $ oc get pods -n openshift-gitops
+    NAME                                                      	      READY   STATUS    RESTARTS   AGE
+    cluster-b5798d6f9-zr576                                   	      1/1 	  Running   0          65m
+    kam-69866d7c48-8nsjv                                      	      1/1 	  Running   0          65m
+    openshift-gitops-application-controller-0                 	      1/1 	  Running   0          53m
+    openshift-gitops-applicationset-controller-6447b8dfdd-5ckgh       1/1 	  Running   0          65m
+    openshift-gitops-dex-server-569b498bd9-vf6mr                      1/1     Running   0          65m
+    openshift-gitops-redis-74bd8d7d96-49bjf                   	      1/1 	  Running   0          65m
+    openshift-gitops-repo-server-c999f75d5-l4rsg              	      1/1 	  Running   0          65m
+    openshift-gitops-server-5785f7668b-wj57t                  	      1/1 	  Running   0          53m
+    ```
+
+5.  Verify that the pod/s in the `openshift-gitops-operator` namespace are running.
+
+    ```console
+    $ oc get pods -n openshift-gitops-operator
+    NAME                                                            READY   STATUS    RESTARTS   AGE
+    openshift-gitops-operator-controller-manager-664966d547-vr4vb   2/2     Running   0          65m
+    ```
 ## References
 
 * [OpenShift Container Platform Documentation: Images: Creating Images](https://github.com/openshift/source-to-image)
