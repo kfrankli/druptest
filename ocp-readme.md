@@ -330,4 +330,6 @@
 
 ## References
 
+* [OpenShift Container Platform Documentation: Images: Creating Images](https://github.com/openshift/source-to-image)
+* [OpenShift Origin GitHub: Source-To-Image](https://docs.openshift.com/container-platform/4.14/openshift_images/create-images.html#images-create-guidelines_create-images)
 * [OpenShift Docker/Container Build Examples](https://github.com/openshift-examples/container-build)
