@@ -476,21 +476,43 @@
     - If you had **RWX** storage available and created one PVC, run the following. Pick either the nginx or php pod name
 
       ```console
-      oc get pods
+      c get pods -l deployment=php
+      ```
+
+      Now using the podnames to `oc rysnc` the contents to the instance replacing the pod name as appropriate:
+
+      ```console
+      oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+      ```
+
+      Optionally if you wanted to get clever and use [Go templating](http://golang.org/pkg/text/template/#pkg-overview) to one line it:
+
+      ```console
+      oc rsync ./htdocs/ $(oc get pods -l deployment=php  --template='{{range .items}}{{.metadata.name}}{{end}}'):/opt/app/htdocs
       ```
 
     - If you didn't have **RWX** storage and had to make two PVCs, run the following
 
-    Now using the podnames to `oc rysnc` the contents to the instances. 
+      ```console
+      oc get pods -l deployment=php
+      oc get pods -l deployment=nginx
+      ```
 
+      Now using the podnames to `oc rysnc` the contents to the instance replacing the pod name as appropriate:
 
+      ```console
+      oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+      oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
+      ```
 
-    ```console
-    oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
-    oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
-    ```
+      Optionally if you wanted to get clever and use [Go templating](http://golang.org/pkg/text/template/#pkg-overview) to one line it:
 
-16. Find the route name for nginx
+      ```console
+      oc rsync ./htdocs/ $(oc get pods -l deployment=php  --template='{{range .items}}{{.metadata.name}}{{end}}'):/opt/app/htdocs
+      oc rsync ./htdocs/ $(oc get pods -l deployment=nginx  --template='{{range .items}}{{.metadata.name}}{{end}}'):/var/www/html/htdocs/ 
+      ```
+
+17. Find the route name for nginx
 
     ```console
     oc get route nginx
@@ -502,7 +524,7 @@
     oc get route nginx --template={{.spec.host}}
     ```
 
-17. Use curl to confirm it's deployed
+18. Use curl to confirm it's deployed
 
     ```console
     curl nginx-druptest.apps.cluster-swzqb.swzqb.sandbox1915.opentlc.com
