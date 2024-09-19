@@ -1,0 +1,17 @@
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  to:
+    kind: Service
+    name: nginx
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  port:
+    targetPort: 8080-tcp
+  alternateBackends: []

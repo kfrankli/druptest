@@ -110,7 +110,7 @@
         output:
             to:
               kind: ImageStreamTag
-              name: 'php-container-build:latest'
+              name: 'druptest-php:latest'
     EOF
     ```
 
@@ -154,7 +154,7 @@
         output:
             to:
               kind: ImageStreamTag
-              name: 'nginx-container-build:latest'
+              name: 'druptest-nginx:latest'
     EOF
     ```
 
@@ -200,7 +200,7 @@
               persistentVolumeClaim:
                 claimName: pvc-htdocs
             containers:
-            - image: php-container-build:latest
+            - image: druptest-php:latest
               imagePullPolicy: Always
               name: php
               ports:
@@ -255,7 +255,7 @@
               persistentVolumeClaim:
                 claimName: pvc-htdocs-php
             containers:
-            - image: php-container-build:latest
+            - image: druptest-php:latest
               imagePullPolicy: Always
               name: php
               ports:
@@ -342,7 +342,7 @@
               persistentVolumeClaim:
                 claimName: pvc-htdocs
             containers:
-            - image: nginx-container-build:latest
+            - image: druptest-nginx:latest
               imagePullPolicy: Always
               name: nginx
               ports:
@@ -396,7 +396,7 @@
               persistentVolumeClaim:
                 claimName: pvc-htdocs-nginx
             containers:
-            - image: nginx-container-build:latest
+            - image: druptest-nginx:latest
               imagePullPolicy: Always
               name: nginx
               ports:
@@ -538,84 +538,143 @@
     curl $(oc get route nginx --template={{.spec.host}})
     ```
 
-## Deploy via GitOps
-
-1.  Login to OpenShift via command line as a admin.
+19. Lastly to delete and undo what we've done delete the project
 
     ```console
-    $ oc login ...
+    oc delete project druptest
     ```
 
-2.  Create GitOps namespace. For this command to work you *MUST* be a [cluster `admin` user in OCP RBAC](https://docs.openshift.com/container-platform/4.16/authentication/using-rbac.html).
+## Build via Pipelines
+
+1.  Install the OpenShift Pipelines operator as outlined in the [official docs](https://docs.openshift.com/pipelines/1.15/install_config/installing-pipelines.html#installing-pipelines)  Accept the default settings.
+
+2.  Login to OpenShift via command line
 
     ```console
-    $ oc create namespace openshift-gitops-operator
-    $ oc project openshift-gitops-operator
+    oc login ...
     ```
 
-    The reason you're using the `oc create namespace` is running `oc new-project` will fail. For example:?
+3.  Create a project to contain this
 
     ```console
-    $ oc new-project openshift-gitops-operator
-    Error from server (Forbidden): project.project.openshift.io "openshift-gitops-operator" is forbidden: cannot request a project starting with "openshift-"
+    oc new-project druptest
     ```
 
-3.  Apply the `OperatorGroup` object.
+4.  Switch to the project (the create command will do this by default)
 
     ```console
-    oc apply -f - <<EOF
-    apiVersion: operators.coreos.com/v1
-    kind: OperatorGroup
-    metadata:
-      name: openshift-gitops-operator
-      namespace: openshift-gitops-operator
-    spec:
-      upgradeStrategy: Default
-    EOF
+    oc project druptest
     ```
 
-4.  Apply the Subscription object to subscribe the operator in the `openshift-gitops-operator` namespace.
+5.  Create two new tasks from updating your kubernetes objects and then updating the application deployment to redeploy after a new image build:
 
     ```console
-    oc apply -f - <<EOF
-    apiVersion: operators.coreos.com/v1alpha1
-    kind: Subscription
-    metadata:
-      name: openshift-gitops-operator
-      namespace: openshift-gitops-operator
-    spec:
-      channel: latest 
-      installPlanApproval: Automatic
-      name: openshift-gitops-operator 
-      source: redhat-operators 
-      sourceNamespace: openshift-marketplace
-    EOF
+    oc create -f https://raw.githubusercontent.com/openshift/pipelines-tutorial/master/01_pipeline/01_apply_manifest_task.yaml -n druptest
+
+    oc create -f https://raw.githubusercontent.com/openshift/pipelines-tutorial/master/01_pipeline/02_update_deployment_task.yaml -n druptest
     ```
 
-5.  After the installation is complete, verify that all the pods in the `openshift-gitops` namespace are running. This can take a few minutes depending on your network to even return anything.
+6.  
 
-    ```console
-    $ oc get pods -n openshift-gitops
-    NAME                                                      	      READY   STATUS    RESTARTS   AGE
-    cluster-b5798d6f9-zr576                                   	      1/1 	  Running   0          65m
-    kam-69866d7c48-8nsjv                                      	      1/1 	  Running   0          65m
-    openshift-gitops-application-controller-0                 	      1/1 	  Running   0          53m
-    openshift-gitops-applicationset-controller-6447b8dfdd-5ckgh       1/1 	  Running   0          65m
-    openshift-gitops-dex-server-569b498bd9-vf6mr                      1/1     Running   0          65m
-    openshift-gitops-redis-74bd8d7d96-49bjf                   	      1/1 	  Running   0          65m
-    openshift-gitops-repo-server-c999f75d5-l4rsg              	      1/1 	  Running   0          65m
-    openshift-gitops-server-5785f7668b-wj57t                  	      1/1 	  Running   0          53m
-    ```
+```
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-nginx
+  namespace: druptest
+spec:
+  params:
+  - name: git-url
+    type: string
+    description: url of the git repo for the code of deployment
+    default: "https://github.com/kfrankli/druptest"
+  - name: git-revision
+    type: string
+    description: revision to be used from repo of the code for deployment
+    default: main
+  - name: nginx-containerfile-location
+    type: string
+    default: ".ContainerFiles/nginx/Containerfile"
+  - name: nginx-image-name
+    type: string
+    default: "image-registry.openshift-image-registry.svc:5000/druptest/druptest-nginx:latest"
+  - name: php-containerfile-location
+    type: string
+    default: ".ContainerFiles/php/Containerfile"
+  - name: php-image-name
+    type: string
+    default: "image-registry.openshift-image-registry.svc:5000/druptest/druptest-php:latest"
+  - name: k8s-manifest-dir
+    description: The directory in source that contains yaml manifests
+    type: string
+    default: "k8s"
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: $(params.git-url)
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+    - name: revision
+      value: $(params.git-revision)
+  - name: build-and-push-nginx-image
+    taskRef:
+      name: buildah
+      kind: ClusterTask
+    params:
+    - name: IMAGE
+      value: $(params.nginx-image-name)
+    - name: DOCKERFILE
+      value: $(params.nginx-containerfile-location)
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - fetch-repository
+  - name: build-and-push-php-image
+    taskRef:
+      name: buildah
+      kind: ClusterTask
+    params:
+    - name: IMAGE
+      value: $(params.php-image-name)
+    - name: DOCKERFILE
+      value: $(params.php-containerfile-location)
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - fetch-repository
+  - name: apply-manifests
+    taskRef:
+      name: apply-manifests
+    params:
+    - name: manifest_dir
+      value: $(params.k8s-manifest-dir)
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - build-and-push-nginx-image
+    - build-and-push-php-image
+  workspaces:
+    - name: shared-workspace
+```
 
-5.  Verify that the pod/s in the `openshift-gitops-operator` namespace are running.
+main
+https://github.com/kfrankli/druptest
 
-    ```console
-    $ oc get pods -n openshift-gitops-operator
-    NAME                                                            READY   STATUS    RESTARTS   AGE
-    openshift-gitops-operator-controller-manager-664966d547-vr4vb   2/2     Running   0          65m
-    ```
 ## References
 
 * [OpenShift Container Platform Documentation: Images: Creating Images](https://github.com/openshift/source-to-image)
 * [OpenShift Origin GitHub: Source-To-Image](https://docs.openshift.com/container-platform/4.14/openshift_images/create-images.html#images-create-guidelines_create-images)
 * [OpenShift Docker/Container Build Examples](https://github.com/openshift-examples/container-build)
+* [OpenShift Pipelines Tutorial](https://github.com/openshift/pipelines-tutorial)
