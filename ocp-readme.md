@@ -128,7 +128,7 @@
     oc logs -f bc/nginx-container-build
     ```
 
-9.  Create a DeploymentConfig for the php component
+9.  Create a Deployment for the php component
 
     ```console
     oc apply -f - <<EOF
@@ -213,7 +213,7 @@
     EOF
     ```
 
-12. Create a DeploymentConfig for the nginx component
+12. Create a Deployment for the nginx component
 
     ```console
     oc apply -f - <<EOF
