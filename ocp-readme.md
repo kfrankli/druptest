@@ -20,52 +20,27 @@
     oc project druptest
     ```
 
-4.  Create a ConfigMap for htdocs
-    
-    ```console
-    oc create configmap htdocs --from-file=htdocs/
-    ```
-
-4.  Create a PVC (PersistantVolumeClaim) for nginx
+4.  Create a PVC (PersistantVolumeClaim)
 
     ```console
     oc apply -f - <<EOF
     apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: druptest-nginx-pvc
+      name: htdocs-pvc
       labels:
-        app: druptest-nginx-pvc
+        app: htdocs
     spec:
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
+      storageClassName: efs-sc
       resources:
         requests:
-          storage: 1Gi
+          storage: 10Gi
     EOF
     ```
 
-4.  Create a PVC (PersistantVolumeClaim) for php
-
-    ```console
-    oc apply -f - <<EOF
-    apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: druptest-php-pvc
-      labels:
-        app: druptest-php-pvc
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1Gi
-    EOF
-    ```
-
-
-4.  Create a simple imagestream and buildconfig for the PHP component
+5.  Create a simple imagestream and buildconfig for the PHP component
 
     ```console
     oc apply -f - <<EOF
@@ -103,13 +78,13 @@
     EOF
     ```
 
-5.  Follow the image build logs:
+6.  Follow the image build logs:
     
     ```console
     oc logs -f bc/php-container-build
     ```
 
-6.  Create a simple imagestream and buildconfig for the NGinx component
+7.  Create a simple imagestream and buildconfig for the NGinx component
 
     ```console
     oc apply -f - <<EOF
@@ -147,13 +122,13 @@
     EOF
     ```
 
-7.  Follow the image build logs:
+8.  Follow the image build logs:
     
     ```console
     oc logs -f bc/nginx-container-build
     ```
 
-8.  Create a DeploymentConfig for the php component
+9.  Create a DeploymentConfig for the php component
 
     ```console
     oc apply -f - <<EOF
@@ -185,7 +160,7 @@
           volumes:
           - name: htdocs
             persistentVolumeClaim:
-              claimName: druptest-php-pvc
+              claimName: htdocs-pvc
           containers:
           - image: php-container-build:latest
             imagePullPolicy: Always
@@ -209,13 +184,13 @@
     EOF
     ```
 
-9.  Check that the pod comes up:
+10. Check that the pod comes up:
 
     ```console
     oc get pods
     ```
 
-10. Create a service
+11. Create a service
 
     ```console
     oc apply -f - <<EOF
@@ -238,7 +213,7 @@
     EOF
     ```
 
-11. Create a DeploymentConfig for the nginx component
+12. Create a DeploymentConfig for the nginx component
 
     ```console
     oc apply -f - <<EOF
@@ -270,7 +245,7 @@
           volumes:
           - name: htdocs
             persistentVolumeClaim:
-              claimName: druptest-nginx-pvc
+              claimName: htdocs-pvc
           containers:
           - image: nginx-container-build:latest
             imagePullPolicy: Always
@@ -283,7 +258,7 @@
             terminationMessagePolicy: File
             volumeMounts:
             - name: htdocs
-              mountPath: "/var/www/htmlapp//"
+              mountPath: "/var/www/html/"
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -292,13 +267,13 @@
     EOF
     ```
 
-12. Check that the pod comes up:
+13. Check that the pod comes up:
 
     ```console
     oc get pods
     ```
 
-13. Create a nginx service
+14. Create a nginx service
 
     ```console
     oc apply -f - <<EOF
@@ -325,7 +300,7 @@
     EOF
     ```
 
-14. Create a nginx route
+15. Create a nginx route
     
     ```console
     oc apply -f - <<EOF
@@ -347,24 +322,17 @@
     EOF
     ```
 
-15. Find the route name for nginx
+16. Find the route name for nginx
 
     ```console
     oc get route nginx
     ```
 
-16. Use curl to confirm it's deployed
+17. Use curl to confirm it's deployed
 
     ```console
     curl nginx-druptest.apps.cluster-swzqb.swzqb.sandbox1915.opentlc.com
     ```
-
-17. Make a Configmap with content from htdocs mounted at `/var/www/html/` for the S2I build.
-    Then make a PVC and replace with htdocs for the running containers
-
-19. nginx conf
-
-/opt/app/
 
 20. How to manually copy files
 
