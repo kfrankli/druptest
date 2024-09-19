@@ -20,25 +20,61 @@
     oc project druptest
     ```
 
-4.  Create a PVC (PersistantVolumeClaim)
+4.  This part will take two paths depending on if you have RWX storage available or not. 
 
-    ```console
-    oc apply -f - <<EOF
-    apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: htdocs-pvc
-      labels:
-        app: htdocs
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: efs-sc
-      resources:
-        requests:
-          storage: 10Gi
-    EOF
-    ```
+    - If you have **ReadWriteMany** storage available, create a single PVC:
+
+      ```console
+      oc apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pvc-htdocs
+        labels:
+          app: htdocs
+      spec:
+        accessModes:
+          - ReadWriteMany
+        storageClassName: efs-sc  #Update as needed
+        resources:
+          requests:
+            storage: 1Gi
+      EOF
+      ```
+    
+    - If  **ReadWriteMany** storage is **not** available, create a two PVCs:
+
+      ```console
+      oc apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pvc-htdocs-nginx
+        labels:
+          app: htdocs-nginx
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi
+      EOF
+
+      oc apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pvc-htdocs-php
+        labels:
+          app: htdocs-php
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi
+      EOF
+      ```        
 
 5.  Create a simple imagestream and buildconfig for the PHP component
 
@@ -130,59 +166,116 @@
 
 9.  Create a Deployment for the php component
 
-    ```console
-    oc apply -f - <<EOF
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      labels:
-        app: php
-      name: php
-    spec:
-      progressDeadlineSeconds: 600
-      replicas: 1
-      revisionHistoryLimit: 10
-      selector:
-        matchLabels:
-          deployment: php
-      strategy:
-        rollingUpdate:
-          maxSurge: 25%
-          maxUnavailable: 25%
-        type: RollingUpdate
-      template:
-        metadata:
-          annotations:
-            alpha.image.policy.openshift.io/resolve-names: '*'
-          labels:
+    - If you had **RWX** storage available and created one PVC, run the following.
+
+      ```console
+      oc apply -f - <<EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: php
+        name: php
+      spec:
+        progressDeadlineSeconds: 600
+        replicas: 1
+        revisionHistoryLimit: 10
+        selector:
+          matchLabels:
             deployment: php
-        spec:
-          volumes:
-          - name: htdocs
-            persistentVolumeClaim:
-              claimName: htdocs-pvc
-          containers:
-          - image: php-container-build:latest
-            imagePullPolicy: Always
-            name: php
-            ports:
-            - containerPort: 8080
-              protocol: TCP
-            - containerPort: 8443
-              protocol: TCP
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-            volumeMounts:
+        strategy:
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+          type: RollingUpdate
+        template:
+          metadata:
+            annotations:
+              alpha.image.policy.openshift.io/resolve-names: '*'
+            labels:
+              deployment: php
+          spec:
+            volumes:
             - name: htdocs
-              mountPath: "/opt/app/htdocs/"
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-    EOF
-    ```
+              persistentVolumeClaim:
+                claimName: pvc-htdocs
+            containers:
+            - image: php-container-build:latest
+              imagePullPolicy: Always
+              name: php
+              ports:
+              - containerPort: 8080
+                protocol: TCP
+              - containerPort: 8443
+                protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - name: htdocs
+                mountPath: "/opt/app/htdocs/"
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+      EOF
+      ```
+    - If you didn't have **RWX** storage and had to make two PVCs, run the following
+
+      ```
+      oc apply -f - <<EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: php
+        name: php
+      spec:
+        progressDeadlineSeconds: 600
+        replicas: 1
+        revisionHistoryLimit: 10
+        selector:
+          matchLabels:
+            deployment: php
+        strategy:
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+          type: RollingUpdate
+        template:
+          metadata:
+            annotations:
+              alpha.image.policy.openshift.io/resolve-names: '*'
+            labels:
+              deployment: php
+          spec:
+            volumes:
+            - name: htdocs
+              persistentVolumeClaim:
+                claimName: pvc-htdocs-php
+            containers:
+            - image: php-container-build:latest
+              imagePullPolicy: Always
+              name: php
+              ports:
+              - containerPort: 8080
+                protocol: TCP
+              - containerPort: 8443
+                protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - name: htdocs
+                mountPath: "/opt/app/htdocs/"
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+      EOF
+      ```
 
 10. Check that the pod comes up:
 
@@ -215,57 +308,113 @@
 
 12. Create a Deployment for the nginx component
 
-    ```console
-    oc apply -f - <<EOF
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      labels:
-        app: nginx
-      name: nginx
-    spec:
-      progressDeadlineSeconds: 600
-      replicas: 1
-      revisionHistoryLimit: 10
-      selector:
-        matchLabels:
-          deployment: nginx
-      strategy:
-        rollingUpdate:
-          maxSurge: 25%
-          maxUnavailable: 25%
-        type: RollingUpdate
-      template:
-        metadata:
-          annotations:
-            alpha.image.policy.openshift.io/resolve-names: '*'
-          labels:
+    - If you had **RWX** storage available and created one PVC, run the following.
+
+      ```console
+      oc apply -f - <<EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: nginx
+        name: nginx
+      spec:
+        progressDeadlineSeconds: 600
+        replicas: 1
+        revisionHistoryLimit: 10
+        selector:
+          matchLabels:
             deployment: nginx
-        spec:
-          volumes:
-          - name: htdocs
-            persistentVolumeClaim:
-              claimName: htdocs-pvc
-          containers:
-          - image: nginx-container-build:latest
-            imagePullPolicy: Always
-            name: nginx
-            ports:
-            - containerPort: 8080
-              protocol: TCP
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-            volumeMounts:
+        strategy:
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+          type: RollingUpdate
+        template:
+          metadata:
+            annotations:
+              alpha.image.policy.openshift.io/resolve-names: '*'
+            labels:
+              deployment: nginx
+          spec:
+            volumes:
             - name: htdocs
-              mountPath: "/var/www/html/"
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-    EOF
-    ```
+              persistentVolumeClaim:
+                claimName: pvc-htdocs
+            containers:
+            - image: nginx-container-build:latest
+              imagePullPolicy: Always
+              name: nginx
+              ports:
+              - containerPort: 8080
+                protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - name: htdocs
+                mountPath: "/var/www/html/"
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+      EOF
+      ```
+    - If you didn't have **RWX** storage and had to make two PVCs, run the following
+
+
+      ```console
+      oc apply -f - <<EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: nginx
+        name: nginx
+      spec:
+        progressDeadlineSeconds: 600
+        replicas: 1
+        revisionHistoryLimit: 10
+        selector:
+          matchLabels:
+            deployment: nginx
+        strategy:
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+          type: RollingUpdate
+        template:
+          metadata:
+            annotations:
+              alpha.image.policy.openshift.io/resolve-names: '*'
+            labels:
+              deployment: nginx
+          spec:
+            volumes:
+            - name: htdocs
+              persistentVolumeClaim:
+                claimName: pvc-htdocs-nginx
+            containers:
+            - image: nginx-container-build:latest
+              imagePullPolicy: Always
+              name: nginx
+              ports:
+              - containerPort: 8080
+                protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - name: htdocs
+                mountPath: "/var/www/html/"
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext: {}
+            terminationGracePeriodSeconds: 30
+      EOF
+      ```
 
 13. Check that the pod comes up:
 
@@ -322,10 +471,35 @@
     EOF
     ```
 
+16. We're going to manually copy files. First you need to get a the pod names:
+
+    - If you had **RWX** storage available and created one PVC, run the following. Pick either the nginx or php pod name
+
+      ```console
+      oc get pods
+      ```
+
+    - If you didn't have **RWX** storage and had to make two PVCs, run the following
+
+    Now using the podnames to `oc rysnc` the contents to the instances. 
+
+
+
+    ```console
+    oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
+    oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+    ```
+
 16. Find the route name for nginx
 
     ```console
     oc get route nginx
+    ```
+
+    Now if you want to get *really* clever you can use [Go templating](http://golang.org/pkg/text/template/#pkg-overview) and get just the URL:
+
+    ```console
+    oc get route nginx --template={{.spec.host}}
     ```
 
 17. Use curl to confirm it's deployed
@@ -334,11 +508,10 @@
     curl nginx-druptest.apps.cluster-swzqb.swzqb.sandbox1915.opentlc.com
     ```
 
-20. How to manually copy files
+    Or we can use the cleverness of GO templating we just learned in the prior step and linux bash command nesting to single line the two steps:
 
-    ```
-    oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
-    oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+    ```console
+    curl $(oc get route nginx --template={{.spec.host}})
     ```
 
 ## Deploy via GitOps
