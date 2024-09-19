@@ -1,4 +1,4 @@
-# Smithsonian Institue Baseline Drupal Insallation OpenShift POC
+# Smithsonian Institution Baseline Drupal Insallation OpenShift POC
 
 ## Steps to create OCP Objects Manually
 
