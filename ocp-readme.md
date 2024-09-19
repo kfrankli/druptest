@@ -569,12 +569,16 @@
 5.  Create two new tasks from updating your kubernetes objects and then updating the application deployment to redeploy after a new image build:
 
     ```console
-    oc create -f https://raw.githubusercontent.com/openshift/pipelines-tutorial/master/01_pipeline/01_apply_manifest_task.yaml -n druptest
+    oc create -f ./tekton/apply_manifest_task.yaml -n druptest
 
-    oc create -f https://raw.githubusercontent.com/openshift/pipelines-tutorial/master/01_pipeline/02_update_deployment_task.yaml -n druptest
+    oc create -f ./tekton/update_deployment_task.yaml -n druptest
     ```
 
-6.  
+6.  Create the pipeline
+
+    ```console
+    oc create -f ./tekton/pipeline.yaml -n druptest
+    ```
 
 ```
 apiVersion: tekton.dev/v1beta1
