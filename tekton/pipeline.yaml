@@ -30,6 +30,12 @@ spec:
     description: The directory in source that contains yaml manifests
     type: string
     default: "k8s"
+  - name: nginx-deployment-name
+    type: string
+    default: "nginx"
+  - name: php-deployment-name
+    type: string
+    default: "php"
   tasks:
   - name: fetch-repository
     taskRef:
@@ -87,5 +93,25 @@ spec:
     runAfter:
     - build-and-push-nginx-image
     - build-and-push-php-image
+  - name: update-nginx-deployment
+    taskRef:
+      name: update-deployment
+    params:
+    - name: deployment
+      value: $(params.nginx-deployment-name)
+    - name: IMAGE
+      value: $(params.nginx-image-name)
+    runAfter:
+    - apply-manifests
+  - name: update-php-deployment
+    taskRef:
+      name: update-deployment
+    params:
+    - name: deployment
+      value: $(params.php-deployment-name)
+    - name: IMAGE
+      value: $(params.php-image-name)
+    runAfter:
+     - apply-manifests
   workspaces:
     - name: shared-workspace
