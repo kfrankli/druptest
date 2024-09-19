@@ -580,101 +580,11 @@
     oc create -f ./tekton/pipeline.yaml -n druptest
     ```
 
-```
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: build-nginx
-  namespace: druptest
-spec:
-  params:
-  - name: git-url
-    type: string
-    description: url of the git repo for the code of deployment
-    default: "https://github.com/kfrankli/druptest"
-  - name: git-revision
-    type: string
-    description: revision to be used from repo of the code for deployment
-    default: main
-  - name: nginx-containerfile-location
-    type: string
-    default: ".ContainerFiles/nginx/Containerfile"
-  - name: nginx-image-name
-    type: string
-    default: "image-registry.openshift-image-registry.svc:5000/druptest/druptest-nginx:latest"
-  - name: php-containerfile-location
-    type: string
-    default: ".ContainerFiles/php/Containerfile"
-  - name: php-image-name
-    type: string
-    default: "image-registry.openshift-image-registry.svc:5000/druptest/druptest-php:latest"
-  - name: k8s-manifest-dir
-    description: The directory in source that contains yaml manifests
-    type: string
-    default: "k8s"
-  tasks:
-  - name: fetch-repository
-    taskRef:
-      name: git-clone
-      kind: ClusterTask
-    workspaces:
-    - name: output
-      workspace: shared-workspace
-    params:
-    - name: url
-      value: $(params.git-url)
-    - name: subdirectory
-      value: ""
-    - name: deleteExisting
-      value: "true"
-    - name: revision
-      value: $(params.git-revision)
-  - name: build-and-push-nginx-image
-    taskRef:
-      name: buildah
-      kind: ClusterTask
-    params:
-    - name: IMAGE
-      value: $(params.nginx-image-name)
-    - name: DOCKERFILE
-      value: $(params.nginx-containerfile-location)
-    workspaces:
-    - name: source
-      workspace: shared-workspace
-    runAfter:
-    - fetch-repository
-  - name: build-and-push-php-image
-    taskRef:
-      name: buildah
-      kind: ClusterTask
-    params:
-    - name: IMAGE
-      value: $(params.php-image-name)
-    - name: DOCKERFILE
-      value: $(params.php-containerfile-location)
-    workspaces:
-    - name: source
-      workspace: shared-workspace
-    runAfter:
-    - fetch-repository
-  - name: apply-manifests
-    taskRef:
-      name: apply-manifests
-    params:
-    - name: manifest_dir
-      value: $(params.k8s-manifest-dir)
-    workspaces:
-    - name: source
-      workspace: shared-workspace
-    runAfter:
-    - build-and-push-nginx-image
-    - build-and-push-php-image
-  workspaces:
-    - name: shared-workspace
-```
+7.  Once you're done experimenting, feel free to delete the project.
 
-main
-https://github.com/kfrankli/druptest
+    ```console
+    oc delete project druptest
+    ```
 
 ## References
 
