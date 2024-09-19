@@ -464,7 +464,9 @@
       to:
         kind: Service
         name: nginx
-      tls: null
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
       port:
         targetPort: 8080-tcp
       alternateBackends: []
