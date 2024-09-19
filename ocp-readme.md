@@ -54,7 +54,7 @@
           app: htdocs-nginx
       spec:
         accessModes:
-          - ReadWriteMany
+          - ReadWriteOnce
         resources:
           requests:
             storage: 1Gi
@@ -69,7 +69,7 @@
           app: htdocs-php
       spec:
         accessModes:
-          - ReadWriteMany
+          - ReadWriteOnce
         resources:
           requests:
             storage: 1Gi
