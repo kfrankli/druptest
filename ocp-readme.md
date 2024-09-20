@@ -83,7 +83,7 @@
     kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
-      name: php-container-build
+      name: druptest-php
     spec:
       lookupPolicy:
         local: true
@@ -127,7 +127,7 @@
     kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
-      name: nginx-container-build
+      name: druptest-nginx
     spec:
       lookupPolicy:
         local: true
