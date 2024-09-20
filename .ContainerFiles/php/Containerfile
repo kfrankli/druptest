@@ -35,7 +35,7 @@ RUN chmod 775 -R /var/www/html/
 # Run as non-root user
  #USER default
 
-USER 1001
+
 
 
 # Install PHP dependencies, ignoring platform reqs
@@ -47,6 +47,6 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 # RUN chown -R 1001:0 . && chmod -R g=u .
 
 
-
+USER 1001
 # Set the default command for the resulting image
 CMD /usr/libexec/s2i/run
