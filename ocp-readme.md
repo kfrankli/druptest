@@ -580,7 +580,30 @@
     oc create -f ./tekton/pipeline.yaml -n druptest
     ```
 
-7.  Once you're done experimenting, feel free to delete the project.
+7.  Trigger the pipeline
+
+8.  Once the pods are up, populate the PVs
+
+    ```console
+    oc get pods -l deployment=php
+    oc get pods -l deployment=nginx
+    ```
+
+    Now using the podnames to `oc rysnc` the contents to the instance replacing the pod name as appropriate:
+
+    ```console
+    oc rsync ./htdocs/ php-f74f65d57-smtct:/opt/app/htdocs
+    oc rsync ./htdocs/ nginx-786bf7bf7b-9tlnn:/var/www/html/htdocs/ 
+    ```
+
+    Optionally if you wanted to get clever and use [Go templating](http://golang.org/pkg/text/template/#pkg-overview) to one line it:
+
+    ```console
+    oc rsync ./htdocs/ $(oc get pods -l deployment=php  --template='{{range .items}}{{.metadata.name}}{{end}}'):/opt/app/htdocs
+    oc rsync ./htdocs/ $(oc get pods -l deployment=nginx  --template='{{range .items}}{{.metadata.name}}{{end}}'):/var/www/html/htdocs/ 
+    ```
+
+9.  Once you're done experimenting, feel free to delete the project.
 
     ```console
     oc delete project druptest
