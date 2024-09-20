@@ -223,7 +223,7 @@
       ```
     - If you didn't have **RWX** storage and had to make two PVCs, run the following
 
-      ```
+      ```console
       oc apply -f - <<EOF
       apiVersion: apps/v1
       kind: Deployment

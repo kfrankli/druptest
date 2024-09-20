@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: build-nginx
+  name: build-druptest-app
   namespace: druptest
 spec:
   params:
