@@ -35,7 +35,7 @@
       spec:
         accessModes:
           - ReadWriteMany
-        storageClassName: efs-sc  #Update as needed
+        storageClassName: ocs-storagecluster-cephfs
         resources:
           requests:
             storage: 1Gi
